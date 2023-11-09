@@ -3,7 +3,8 @@ from bs4 import BeautifulSoup
 
 import os
 
-def ptt(keyword,picsNum):    
+def pttBeauty_imgurDowlnload(keyword,picsNum):   
+    picNameList = []
     my_headers = {"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"}
     payload = {"from":"/bbs/Beauty/index.html",
                 "yes":"yes"}
@@ -45,8 +46,10 @@ def ptt(keyword,picsNum):
                             pic = picUrl.get("href").split("/")[-1]
                             if "." in pic:
                                 savePic = "https://i.imgur.com/"+pic
+                                picNameList.append(pic)
                             else:
                                 savePic = "https://i.imgur.com/"+pic+".png"
+                                picNameList.append(pic)
                             print(savePic)
                                 
                             url = requests.get(savePic)
@@ -56,15 +59,14 @@ def ptt(keyword,picsNum):
                             no += 1
                             picsNum -= 1
                             if picsNum == 0:
-                                return
+                                return picNameList
             if soup.select("div.action-bar a")[3].get("href") == None:
                 print("沒有imgur圖片可以挖了QQ")
-                return                                
+                return picNameList                                
             url = "https://www.ptt.cc"+soup.select("div.action-bar a")[3].get("href")      
-    
       
         
 name = input("請輸入想搜尋的人名:")
 count = eval(input("請輸入想搜尋的張數:"))
 
-ptt(name,count)
+picNameList = pttBeauty_imgurDowlnload(name,count)
