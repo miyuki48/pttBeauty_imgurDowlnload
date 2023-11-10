@@ -88,7 +88,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "pttBeauty_imgurDowlnloader"))
         self.pushButton.setText(_translate("MainWindow", "下載"))
         self.label.setText(_translate("MainWindow", "請輸入想在ptt表特版查詢的關鍵字:"))
         self.label_2.setText(_translate("MainWindow", "請輸入下載的張數:"))

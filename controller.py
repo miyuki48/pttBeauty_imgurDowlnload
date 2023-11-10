@@ -35,11 +35,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.keyword = ""
         
     def buttonClicked(self):
-        self.ui.downloadMsg.setText("下載中請稍等...")
-        self.ui.downloadMsg.repaint()  #https://stackoverflow.com/questions/4510712/qlabel-settext-not-displaying-text-immediately-before-running-other-method
-        self.ui.pushButton.setEnabled(False)
-        self.ui.downloadMsg.repaint()
-
         self.ui.page.setText("")
         self.ui.result_1.setPixmap(QPixmap())
         self.ui.result_2.setPixmap(QPixmap())
@@ -48,6 +43,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.result_5.setPixmap(QPixmap())
         self.ui.result_6.setPixmap(QPixmap())
         
+        self.ui.downloadMsg.setText("下載中請稍等...")
+        self.ui.downloadMsg.repaint()  #https://stackoverflow.com/questions/4510712/qlabel-settext-not-displaying-text-immediately-before-running-other-method
+        self.ui.pushButton.setEnabled(False)
+        self.ui.downloadMsg.repaint()
+
         global picNameList,picDownloadNums,keyword
         keyword = self.ui.keyword.text()
         picsNum = eval(self.ui.picsNum.text())
