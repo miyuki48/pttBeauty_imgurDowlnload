@@ -12,6 +12,8 @@ from PyQt5.QtGui import QImage, QPixmap
 import cv2
 import numpy as np
 
+from time import sleep
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
 		# in python3, super(Class, self).xxx = super().xxx
@@ -23,8 +25,21 @@ class MainWindow(QtWidgets.QMainWindow):
     def setup_control(self):
         self.count = 0
         self.ui.pushButton.clicked.connect(self.buttonClicked)
-    
+        self.ui.nextButton.clicked.connect(self.nextButtonClicked)
+        self.ui.lastButton.clicked.connect(self.lastButtonClicked)
+        
+        self.picNameList = []
+        self.picDownloadNums = 0
+        self.totalPage=0
+        self.currentPage=0
+        self.keyword = ""
+        
     def buttonClicked(self):
+        self.ui.downloadMsg.setText("下載中請稍等...")
+        self.ui.downloadMsg.repaint()  #https://stackoverflow.com/questions/4510712/qlabel-settext-not-displaying-text-immediately-before-running-other-method
+        self.ui.pushButton.setEnabled(False)
+        self.ui.downloadMsg.repaint()
+
         self.ui.page.setText("")
         self.ui.result_1.setPixmap(QPixmap())
         self.ui.result_2.setPixmap(QPixmap())
@@ -32,22 +47,102 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.result_4.setPixmap(QPixmap())
         self.ui.result_5.setPixmap(QPixmap())
         self.ui.result_6.setPixmap(QPixmap())
-
+        
+        global picNameList,picDownloadNums,keyword
         keyword = self.ui.keyword.text()
         picsNum = eval(self.ui.picsNum.text())
+        
         self.picNameList = self.pttBeauty_imgurDowlnload(keyword,picsNum) 
+        self.picDownloadNums = len(self.picNameList)
+        print(self.picNameList)
         
-        self.totalPage = (len(self.picNameList)-1) // 6 +1
-        self.currentPage = 1
-        
-        if len(self.picNameList) > 0:
-            for i in range(len(self.picNameList)):
-                self.img_path = fr".\{keyword}\{self.picNameList[i]}"
-                self.display_img(i+1)
-                self.ui.page.setText(f"第1頁/共{self.totalPage}頁,總共{len(self.picNameList)}張")
-                
+        if self.picDownloadNums > 0:
+            global totalPage,currentPage
+            self.totalPage = (self.picDownloadNums-1) // 6 +1
+            self.currentPage = 1
+            self.ui.downloadMsg.setText("下載完畢!")
+            
+            if self.picDownloadNums < 6:
+                for i in range(self.picDownloadNums):
+                    self.img_path = fr".\{keyword}\{self.picNameList[i]}"
+                    self.display_img(i+1)
+                    self.ui.page.setText(f"第1頁/共{self.totalPage}頁,總共{self.picDownloadNums}張")
+            else:
+                for i in range(6):
+                    self.img_path = fr".\{keyword}\{self.picNameList[i]}"
+                    self.display_img(i+1)
+                    self.ui.page.setText(f"第1頁/共{self.totalPage}頁,總共{self.picDownloadNums}張")
+            
+            if self.totalPage > self.currentPage:
+                self.ui.nextButton.setEnabled(True)
+
+            self.ui.pushButton.setEnabled(True)
+            
         else:
             self.display_noImg()
+            
+    def nextButtonClicked(self):
+        self.ui.page.setText("")
+        self.ui.result_1.setPixmap(QPixmap())
+        self.ui.result_2.setPixmap(QPixmap())
+        self.ui.result_3.setPixmap(QPixmap())
+        self.ui.result_4.setPixmap(QPixmap())
+        self.ui.result_5.setPixmap(QPixmap())
+        self.ui.result_6.setPixmap(QPixmap())
+        
+        self.currentPage += 1 
+        
+        try:
+            for i in range(6*(self.currentPage-1),6*self.currentPage):
+                self.img_path = fr".\{keyword}\{self.picNameList[i]}"
+                self.display_img(i+1)
+                self.ui.page.setText(f"第{self.currentPage}頁/共{self.totalPage}頁,總共{len(self.picNameList)}張")
+        except:
+            pass
+        
+        if self.totalPage > self.currentPage and self.currentPage > 1:
+            self.ui.nextButton.setEnabled(True)        
+            self.ui.lastButton.setEnabled(True)  
+        elif self.totalPage > self.currentPage:
+            self.ui.nextButton.setEnabled(True)
+            self.ui.lastButton.setEnabled(False) 
+        elif self.currentPage > 1:    
+            self.ui.nextButton.setEnabled(False) 
+            self.ui.lastButton.setEnabled(True) 
+        else:
+            self.ui.nextButton.setEnabled(False)
+            self.ui.lastButton.setEnabled(False)
+            
+    def lastButtonClicked(self):
+        self.ui.page.setText("")
+        self.ui.result_1.setPixmap(QPixmap())
+        self.ui.result_2.setPixmap(QPixmap())
+        self.ui.result_3.setPixmap(QPixmap())
+        self.ui.result_4.setPixmap(QPixmap())
+        self.ui.result_5.setPixmap(QPixmap())
+        self.ui.result_6.setPixmap(QPixmap())
+        
+        self.currentPage -= 1 
+        try:
+            for i in range(6*(self.currentPage-1),6*self.currentPage):
+                self.img_path = fr".\{keyword}\{self.picNameList[i]}"
+                self.display_img(i+1)
+                self.ui.page.setText(f"第{self.currentPage}頁/共{self.totalPage}頁,總共{len(self.picNameList)}張")
+        except:
+            pass
+        if self.totalPage > self.currentPage and self.currentPage > 1:
+            self.ui.nextButton.setEnabled(True)        
+            self.ui.lastButton.setEnabled(True)  
+        elif self.totalPage > self.currentPage:
+            self.ui.nextButton.setEnabled(True)
+            self.ui.lastButton.setEnabled(False) 
+        elif self.currentPage > 1:    
+            self.ui.nextButton.setEnabled(False) 
+            self.ui.lastButton.setEnabled(True) 
+        else:
+            self.ui.nextButton.setEnabled(False)
+            self.ui.lastButton.setEnabled(False)
+        
         
     def display_img(self,position):
         # self.img = cv2.imread(self.img_path) #https://blog.csdn.net/weixin_44941350/article/details/125217307
@@ -79,7 +174,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.result_6.adjustSize()
          
     def display_noImg(self):
-        self.ui.result_1.setText("沒有imgur圖片可以挖了QQ")
+        self.ui.downloadMsg.setText("沒有imgur圖片可以挖了QQ")
         
     def pttBeauty_imgurDowlnload(self,keyword,picsNum):   
         picNameList = []
@@ -126,7 +221,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                     picNameList.append(pic)
                                 else:
                                     savePic = "https://i.imgur.com/"+pic+".png"
-                                    picNameList.append(pic)
+                                    picNameList.append(pic+".png")
                                 print(savePic)
                                     
                                 url = requests.get(savePic)

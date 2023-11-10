@@ -164,6 +164,9 @@
     </property>
    </widget>
    <widget class="QPushButton" name="nextButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>680</x>
@@ -177,6 +180,9 @@
     </property>
    </widget>
    <widget class="QPushButton" name="lastButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>780</x>
@@ -188,6 +194,9 @@
     <property name="text">
      <string>上一頁</string>
     </property>
+    <property name="checkable">
+     <bool>false</bool>
+    </property>
    </widget>
    <widget class="QLabel" name="page">
     <property name="geometry">
@@ -195,6 +204,19 @@
       <x>890</x>
       <y>50</y>
       <width>181</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="downloadMsg">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>80</y>
+      <width>221</width>
       <height>20</height>
      </rect>
     </property>
